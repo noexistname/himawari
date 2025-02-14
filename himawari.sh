@@ -10,7 +10,7 @@ sudo sysctl -p
 
 # 安装并配置防火墙（ufw）
 echo "Installing UFW and configuring firewall..."
-sudo apt install ufw -y
+sudo apt install ufw
 sudo ufw enable
 
 # 检查 UFW 是否启用并启动
