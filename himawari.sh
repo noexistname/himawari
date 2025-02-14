@@ -1,21 +1,22 @@
 # 更新系统并安装必需的软件
 echo "Updating system packages and installing dependencies..."
-apt-get install sudo -y
+apt install sudo -y
+apt update -y && apt upgrade -y
 
 # 配置 BBR TCP 拥塞控制
 echo "Configuring BBR TCP Congestion Control..."
 echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
 echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
-sudo sysctl -p
+sysctl -p
 
 # 安装并配置防火墙（ufw）
 echo "Installing UFW and configuring firewall..."
 sudo apt install ufw
-sudo ufw enable
+ufw enable
 
 # 检查 UFW 是否启用并启动
-sudo ufw reload
-sudo ufw status
+ufw reload
+ufw status
 
 # 提示用户输入 SSH 端口号
 read -p "Enter the SSH port you want to use: " ssh_port
@@ -27,15 +28,15 @@ while ! [[ "$ssh_port" =~ ^[0-9]+$ ]] || [ "$ssh_port" -lt 1 ] || [ "$ssh_port" 
 done
 
 # 允许输入的端口号通过防火墙
-sudo ufw allow "$ssh_port"
+ufw allow "$ssh_port"
 
 # 修改 SSH 配置文件的端口
 echo "Modifying SSH port to $ssh_port..."
-sudo sed -i "s/^#Port 22/Port $ssh_port/" /etc/ssh/sshd_config
+sed -i "s/^#Port 22/Port $ssh_port/" /etc/ssh/sshd_config
 
 # 重启 SSH 服务
 echo "Restarting SSH service..."
-sudo systemctl restart sshd
+systemctl restart sshd
 
 # 配置自定义 Bash 提示符和别名
 echo "Configuring custom PS1 and aliases..."
