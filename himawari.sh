@@ -1,6 +1,11 @@
-# 更新系统并安装必需的软件
+# 检查 root 权限
+if [ "$(id -u)" != "0" ]; then
+   echo "This script must be run as root" 
+   exit 1
+fi
+
+# 更新系统
 echo "Updating system packages and installing dependencies..."
-apt install sudo -y
 apt update -y && apt upgrade -y
 
 # 配置 BBR TCP 拥塞控制
@@ -10,7 +15,7 @@ ConfigFile="/etc/sysctl.conf"
 
 if grep -q "net.core.default_qdisc" $ConfigFile; then
     # 如果存在但值不是fq，则替换
-    sudo sed -i '/net.core.default_qdisc/c\net.core.default_qdisc=fq' $ConfigFile
+    sed -i '/net.core.default_qdisc/c\net.core.default_qdisc=fq' $ConfigFile
 else
     # 如果不存在，则添加
     echo $FQ | sudo tee -a $ConfigFile
@@ -18,18 +23,22 @@ fi
 
 if grep -q "net.ipv4.tcp_congestion_control" $ConfigFile; then
     # 如果存在但值不是bbr，则替换
-    sudo sed -i '/net.ipv4.tcp_congestion_control/c\net.ipv4.tcp_congestion_control=bbr' $ConfigFile
+    sed -i '/net.ipv4.tcp_congestion_control/c\net.ipv4.tcp_congestion_control=bbr' $ConfigFile
 else
     # 如果不存在，则添加
     echo $BBR | sudo tee -a $ConfigFile
 fi
 
 # 应用更改
-sudo sysctl -p
+sysctl -p
 
 # 安装并配置防火墙（ufw）
 echo "Installing UFW and configuring firewall..."
-sudo apt install ufw
+if ! apt install ufw -y; then
+    echo "Failed to install UFW"
+    exit 1
+fi
+
 ufw enable
 
 # 检查 UFW 是否启用并启动
