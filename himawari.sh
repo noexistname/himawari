@@ -4,10 +4,28 @@ apt install sudo -y
 apt update -y && apt upgrade -y
 
 # 配置 BBR TCP 拥塞控制
-echo "Configuring BBR TCP Congestion Control..."
-echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
-echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
-sysctl -p
+FQ="net.core.default_qdisc=fq"
+BBR="net.ipv4.tcp_congestion_control=bbr"
+ConfigFile="/etc/sysctl.conf"
+
+if grep -q "net.core.default_qdisc" $ConfigFile; then
+    # 如果存在但值不是fq，则替换
+    sudo sed -i '/net.core.default_qdisc/c\net.core.default_qdisc=fq' $ConfigFile
+else
+    # 如果不存在，则添加
+    echo $FQ | sudo tee -a $ConfigFile
+fi
+
+if grep -q "net.ipv4.tcp_congestion_control" $ConfigFile; then
+    # 如果存在但值不是bbr，则替换
+    sudo sed -i '/net.ipv4.tcp_congestion_control/c\net.ipv4.tcp_congestion_control=bbr' $ConfigFile
+else
+    # 如果不存在，则添加
+    echo $BBR | sudo tee -a $ConfigFile
+fi
+
+# 应用更改
+sudo sysctl -p
 
 # 安装并配置防火墙（ufw）
 echo "Installing UFW and configuring firewall..."
