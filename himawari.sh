@@ -1,6 +1,6 @@
 # 更新系统并安装必需的软件
 echo "Updating system packages and installing dependencies..."
-apt-get install wget sudo vim git -y
+apt-get installsudo -y
 sudo apt-get update -y && sudo apt upgrade -y
 
 # 配置自定义 Bash 提示符和别名
