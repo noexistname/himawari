@@ -1,6 +1,6 @@
 # 更新系统并安装必需的软件
 echo "Updating system packages and installing dependencies..."
-apt-get install sudo -y
+sudo apt-get install sudo -y
 
 # 配置 BBR TCP 拥塞控制
 echo "Configuring BBR TCP Congestion Control..."
@@ -10,8 +10,12 @@ sudo sysctl -p
 
 # 安装并配置防火墙（ufw）
 echo "Installing UFW and configuring firewall..."
-sudo apt install ufw
+sudo apt install ufw -y
 sudo ufw enable
+
+# 检查 UFW 是否启用并启动
+sudo ufw reload
+sudo ufw status
 
 # 提示用户输入 SSH 端口号
 read -p "Enter the SSH port you want to use: " ssh_port
@@ -35,6 +39,7 @@ sudo systemctl restart sshd
 
 # 配置自定义 Bash 提示符和别名
 echo "Configuring custom PS1 and aliases..."
+echo "# Custom PS1 and Aliases" >> /etc/bash.bashrc
 echo "PS1='[\e[32;40m\e[1m\u\e[32;40m\e[1m@\e[35;40m\e[1m\h\e[0m \e[34;40m\e[1m\W\e[0m]\$ '" >> /etc/bash.bashrc
 echo "alias ls='ls --color=auto'" >> /etc/bash.bashrc
 echo "alias ll='ls --color=auto -l'" >> /etc/bash.bashrc
