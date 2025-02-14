@@ -1,6 +1,6 @@
 # 更新系统并安装必需的软件
 echo "Updating system packages and installing dependencies..."
-sudo apt-get install sudo -y
+apt-get install sudo -y
 
 # 配置 BBR TCP 拥塞控制
 echo "Configuring BBR TCP Congestion Control..."
