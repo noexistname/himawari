@@ -11,7 +11,7 @@ sudo sysctl -p
 # 安装并配置防火墙（ufw）
 echo "Installing UFW and configuring firewall..."
 sudo apt install ufw
-sudo ufw enable -y
+sudo ufw enable
 
 # 提示用户输入 SSH 端口号
 read -p "Enter the SSH port you want to use: " ssh_port
